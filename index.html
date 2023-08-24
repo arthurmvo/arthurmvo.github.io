@@ -17,17 +17,18 @@
           <p id="msg_resultado3" class="msg bold big" hidden></p>
           
           <div id="get_curr" class="grid">
-            <label for="preco-peso">Preço em PESO :</label>
-            <label for="preco-dolar">Preço em DOLAR :</label>
+            <label for="preco-peso">Preço na Argentina :</label>
+            <label for="preco-dolar">Preço nos EUA :</label>
   
             <input type="number" id="preco-peso" placeholder="Ex.: ARS" required="True" autocomplete="False" autofocus="True"></input>
             <input type="number" id="preco-dolar" placeholder="Ex.: USD" required="True" autocomplete="False"></input>
     
-            <button type="button" class="btn exchange_button" id="convert-btn">
+            <button type="button" class="btn exchange_button" id="convert-btn" hidden>
               <svg role="presentation" class="icon exchange__icon" width=24 height=24>
                 <use xlink:href="#exchange__icon" />
               </svg>
             </button>
+            <p id="temp-msg" class="msg">Espere a cotação atualizar.</p>
 
           </div>
         </div>

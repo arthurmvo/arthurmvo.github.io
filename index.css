@@ -125,6 +125,9 @@ label {
   display: block;
 }
 
+.msg[hidden] {
+  display: none;
+}
 /* .msg2 {
   grid-column: span 2;
   width: 100%;
