@@ -3,18 +3,13 @@ let target_currency = "";
 let curr_list = [];
 
 const msg1 = document.getElementById("msg1");
-const msg2 = document.getElementById("msg2");
 const msg3 = document.getElementById("msg3");
-const sliding = document.querySelector(".sliding");
-const slider = document.querySelector(".slider");
-const nxt_btn = document.getElementById("next");
-const convert_btn = document.getElementById("convert");
-const datalist = document.getElementById("currency");
-const output = document.getElementById("output-text");
-const ex_rate_box = document.getElementById("exchange-rate");
-const target_currency_box = document.getElementById("target-currency-unit");
-const source_currency_box = document.getElementById("source-currency-unit");
-const source_amount_box = document.getElementById("original-currency-amount");
+const msg_resultado = document.getElementById("msg_resultado");
+const msg_resultado2 = document.getElementById("msg_resultado2");
+const msg_resultado3 = document.getElementById("msg_resultado3");
+const convert_btn = document.getElementById("convert-btn");
+const input_dolar = document.getElementById("preco-dolar");
+const input_peso = document.getElementById("preco-peso");
 
 // gets exchange rate for specific currencies
 const getExRate = async () => {
@@ -29,123 +24,37 @@ const getExRate = async () => {
 //   console.log(buyValue);
   msg3.textContent = `A cotação atual do dolar MEP é ${buyValue}`;
 
+  return buyValue;
 };
 
 setInterval(getExRate, 1000);
 
+const analyze = async () => {
+  let preco_dolar = input_dolar.value;
+  let preco_peso = input_peso.value;
+  let cotacaostr = await getExRate();
+  let cotacao = parseFloat(cotacaostr.replace(",", ".").replace("$", ""));
+  let dolar = parseFloat(preco_dolar);
+  let peso = parseFloat(preco_peso);
+  // console.log(dolar, peso, cotacao);            
+  let preco_convertido = peso / cotacao;
+  // console.log(preco_convertido);
+  // console.log (dolar/preco_convertido);
+  msg_resultado.hidden = false;
+  msg_resultado2.hidden = false;
+  msg_resultado3.hidden = false;
 
-const fetchCurrency = async () => {
-  source_currency = source_currency_box.value.toString();
-  target_currency = target_currency_box.value.toString();
-
-  //   basic validations
-  if (source_currency === target_currency) {
-    source_currency_box.focus();
-    alert("source and target currency can't be same or empty !");
-    return;
-  } else if (source_currency === "") {
-    source_currency_box.focus();
-    alert("source currency can't be empty !");
-    return;
-  } else if (target_currency === "") {
-    target_currency_box.focus();
-    alert("target currency can't be empty !");
-    return;
+  if (dolar/preco_convertido > 1){
+    msg_resultado.textContent = `O preço na Argentina é USD${preco_convertido.toFixed(2)} e nos EUA está ${dolar.toFixed(2)}.`;
+    msg_resultado2.textContent = `Na Argentina está ${Math.round(100*(dolar/preco_convertido)- 100)}% mais barato`
+    msg_resultado3.textContent = `Vale mais a pena comprar na Argentina`;
   } else {
-    let s_found = curr_list.find((crr) => crr == source_currency);
-    let t_found = curr_list.find((crr) => crr == target_currency);
-
-    // if source currency is not supported
-    if (s_found == undefined) {
-      msg2.innerHTML = `target currency <b>not found</b> for Converting <b>${source_currency}</b> to <b>${target_currency}</b>.\n Enter Exchage rate yourself !`;
-      animateSlider(false);
-      // to get a smooth animation without jumping arround
-      setTimeout(() => ex_rate_box.focus(), 300);
-      // if target currency is not supported it does not loades the rate and does not
-      // disable the exchange rate inputbox
-    } else if (t_found == undefined) {
-      msg2.innerHTML = `target currency <b>not found</b> for Converting <b>${source_currency}</b> to <b>${target_currency}</b>.\n Enter Exchage rate yourself !`;
-      animateSlider(false);
-      // to get a smooth animation without jumping arround
-      setTimeout(() => ex_rate_box.focus(), 300);
-      // if exchange rate is found for the source and target
-    } else {
-      msg2.innerHTML = `Exchange rate found for Converting <b>${source_currency}</b> to <b>${target_currency}</b> `;
-      animateSlider(false);
-      loadExRate(source_currency, target_currency);
-      // to get a smooth animation without jumping arround
-      setTimeout(() => source_amount_box.focus(), 300);
-    }
+    msg_resultado.textContent = `O preço na Argentina é USD${preco_convertido.toFixed(2)} e nos EUA está ${dolar.toFixed(2)}.`;
+    msg_resultado2.textContent = `Nos EUA está ${Math.round((1- dolar/preco_convertido)*100)}% mais barato`
+    msg_resultado3.textContent = `Vale mais a pena comprar nos EUA`;
   }
 };
 
-// button click event for getting the currencies and fetching the rate
-// nxt_btn.addEventListener("click", () => {
-//   console.log("Try Using `Enter` from your keyboard inside the inputbox");
-//   fetchCurrency();
-// });
+convert_btn.addEventListener("click", analyze);
 
-// key press event for getting the currencies and fetching the rate
-document.getElementById("get_curr").addEventListener("keyup", (event) => {
-  if (event.key == "Enter") {
-    fetchCurrency();
-  }
-});
-
-// this function converts the source amount by the exchange rate
-const getConverted = () => {
-  // getting the amount and rate in float value
-  let amt = parseFloat(source_amount_box.value);
-  let r = parseFloat(ex_rate_box.value);
-
-  // basic validations
-  if (isNaN(amt) || amt <= 0) {
-    alert("Source ammount need to be a positive number");
-    source_amount_box.focus();
-    return;
-  } else if (isNaN(r) || r <= 0) {
-    alert("Exchange rate need to be a positive number");
-    ex_rate_box.disabled = false;
-    ex_rate_box.focus();
-    return;
-  }
-  // setting the output inside an html element
-  let res = r * amt;
-  // console.log(res)
-  output.innerHTML = `Your <b>${amt.toFixed(
-    2
-  )} ${source_currency}</b> is converted to <b>${res.toFixed(
-    2
-  )} ${target_currency}</b> 🤑`;
-};
-
-// button click event for getting the converted currencies and printing the output
-convert_btn.addEventListener("click", () => {
-  console.log("Try Using `Enter` from your keyboard inside the inputbox");
-  getConverted();
-});
-
-// key press event for getting the converted currencies and printing the output
-document.getElementById("get_conv").addEventListener("keyup", (event) => {
-  if (event.key == "Enter") {
-    getConverted();
-  }
-});
-
-// change button
-document.querySelector(".change").addEventListener("click", () => {
-  // animate to prev window
-  animateSlider(true);
-  // reset
-  ex_rate_box.disabled = false;
-  ex_rate_box.value = "";
-  output.innerHTML = "Converted 💰 will appear here.";
-});
-
-// swaping source and target currency on button press
-document.querySelector(".exchange_button").addEventListener("click", () => {
-  let temp = source_currency_box.value;
-  source_currency_box.value = target_currency_box.value;
-  target_currency_box.value = temp;
-});
 
